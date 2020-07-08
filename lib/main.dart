@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'image_reader.dart';
 
 void main() {
   runApp(MyApp());
@@ -28,7 +29,33 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
+  List<String> imagesName = [
+    'butterfly',
+    'cheetahs',
+    'chicken',
+    'cow',
+    'deer',
+    'dog',
+    'flamingo',
+    'fox',
+    'giraffe',
+    'goat',
+    'hamster',
+    'jellyfish',
+    'lion',
+    'owl',
+    'panda',
+    'parrot',
+    'peafowl',
+    'rabbit',
+    'raccoon',
+    'rhinoceros',
+    'shark',
+    'squirrel',
+    'tiger',
+    'turtle',
+    'whale',
+  ];
   String currentImageName = "nameOfImage";
 
   @override
@@ -42,13 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(2, 3, 2, 0),
-              child: Container(
-                height: 450,
-                color: Color.fromARGB(100, 224, 202, 207),
-              ),
-            ),
+            ImageReader(imageName: imagesName[0]),
             OutlineButton(
               onPressed: () => {},
               padding: EdgeInsets.all(7),
