@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'image_reader.dart';
 
@@ -38,7 +39,6 @@ class _MyHomePageState extends State<MyHomePage> {
     'dog',
     'flamingo',
     'fox',
-    'giraffe',
     'goat',
     'hamster',
     'jellyfish',
@@ -57,6 +57,56 @@ class _MyHomePageState extends State<MyHomePage> {
     'whale',
   ];
   String currentImageName = "nameOfImage";
+  double scrollPercent = 0.0;
+  double startDragPercentScroll, finishScrollStart, finishScrollEnd;
+  Offset startDrag;
+
+  List<Widget> buildCards() {
+    List<Widget> cardList = [];
+
+    for (int i = 0; i < imagesName.length; i++) {
+      cardList.add(buildOneCard(i, scrollPercent));
+    }
+    return cardList;
+  }
+
+  Widget buildOneCard (int cardIndex, double scrollPercent){
+    final cardScrollPercent = scrollPercent / (1 / imagesName.length);
+    return FractionalTranslation(
+      translation: Offset(cardIndex - cardScrollPercent, 0.0),
+      child: Padding(
+        padding: EdgeInsets.all(5.0),
+        child: ImageReader(imageName: imagesName[cardIndex]),
+      ),
+    );
+  }
+
+  void onHorizontalDragStart(DragStartDetails details) {
+    startDrag = details.globalPosition;
+    startDragPercentScroll = scrollPercent;
+  }
+
+  onHorizontalDragUpdate(DragUpdateDetails details) {
+    final currentDrag = details.globalPosition;
+    final dragDistance = currentDrag.dx - startDrag.dx;
+    final singleCardDragPercent = dragDistance / context.size.width;
+
+    setState(() {
+      scrollPercent = (startDragPercentScroll + (-singleCardDragPercent) / imagesName.length)
+        .clamp(0.0, 1.0 - (1 / imagesName.length));
+    });
+  }
+
+  onHorizontalDragEnd (DragEndDetails details) {
+    finishScrollStart = scrollPercent;
+    finishScrollEnd = (scrollPercent * imagesName.length).round() / imagesName.length;
+
+    setState(() {
+      startDrag = null;
+      startDragPercentScroll = null;
+      currentImageName = "";
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +119,15 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            ImageReader(imageName: imagesName[0]),
+            GestureDetector(
+              onHorizontalDragStart: onHorizontalDragStart,
+              onHorizontalDragUpdate: onHorizontalDragUpdate,
+              onHorizontalDragEnd: onHorizontalDragEnd,
+              behavior: HitTestBehavior.translucent,
+              child: Stack(
+                children: buildCards(),
+              ),
+            ),
             OutlineButton(
               onPressed: () => {},
               padding: EdgeInsets.all(7),
